@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arteks - Sistema de Gestão de Impressão 3D</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2><i class="fas fa-cube"></i> Arteks</h2>
+            <p>Gestão de Impressão 3D</p>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#dashboard" class="nav-item active" data-page="dashboard">
+                <i class="fas fa-chart-line"></i> Dashboard
+            </a>
+            <a href="#calculadora" class="nav-item" data-page="calculadora">
+                <i class="fas fa-calculator"></i> Calculadora
+            </a>
+            <a href="#produtos" class="nav-item" data-page="produtos">
+                <i class="fas fa-box"></i> Produtos
+            </a>
+            <a href="#estoque" class="nav-item" data-page="estoque">
+                <i class="fas fa-warehouse"></i> Estoque
+            </a>
+            <a href="#vendas" class="nav-item" data-page="vendas">
+                <i class="fas fa-shopping-cart"></i> Vendas
+            </a>
+            <a href="#relatorios" class="nav-item" data-page="relatorios">
+                <i class="fas fa-file-alt"></i> Relatórios
+            </a>
+            <a href="#configuracoes" class="nav-item" data-page="configuracoes">
+                <i class="fas fa-cog"></i> Configurações
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <p>© 2026 Arteks Brasil</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="header-right">
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Admin</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="content" id="content">
+            
+            <!-- Dashboard Page -->
+            <div class="page active" id="dashboard-page">
+                <div class="page-header">
+                    <h1><i class="fas fa-chart-line"></i> Dashboard</h1>
+                    <p>Visão geral da operação</p>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card primary">
+                        <div class="stat-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="faturamentoTotal">R$ 0,00</h3>
+                            <p>Faturamento Mensal</p>
+                        </div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="lucroTotal">R$ 0,00</h3>
+                            <p>Lucro Líquido</p>
+                        </div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-icon">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="margemMedia">0%</h3>
+                            <p>Margem Média</p>
+                        </div>
+                    </div>
+                    <div class="stat-card info">
+                        <div class="stat-icon">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="produtosVendidos">0</h3>
+                            <p>Produtos Vendidos</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="charts-row">
+                    <div class="chart-card">
+                        <h3><i class="fas fa-chart-bar"></i> Faturamento por Canal</h3>
+                        <canvas id="canalVendasChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3><i class="fas fa-chart-pie"></i> Distribuição de Custos</h3>
+                        <canvas id="custosChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Recent Products -->
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3><i class="fas fa-trophy"></i> Top 5 Produtos Mais Lucrativos</h3>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Produto</th>
+                                    <th>Custo</th>
+                                    <th>Preço</th>
+                                    <th>Lucro</th>
+                                    <th>Margem</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="topProdutosTable">
+                                <tr>
+                                    <td colspan="6" class="text-center">Carregue produtos na calculadora</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calculadora Page -->
+            <div class="page" id="calculadora-page">
+                <div class="page-header">
+                    <h1><i class="fas fa-calculator"></i> Calculadora de Preços</h1>
+                    <p>Calcule automaticamente custos e preços</p>
+                </div>
+
+                <div class="form-card">
+                    <h3><i class="fas fa-plus-circle"></i> Adicionar Novo Produto</h3>
+                    <form id="produtoForm" class="form-grid">
+                        <div class="form-group">
+                            <label for="nomeProduto">Nome do Produto *</label>
+                            <input type="text" id="nomeProduto" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="tipoMaterial">Tipo de Material *</label>
+                            <select id="tipoMaterial" required>
+                                <option value="">Selecione...</option>
+                                <option value="Filamento">Filamento PLA/ABS</option>
+                                <option value="Resina">Resina</option>
+                                <option value="Premium">Premium (TPU/PETG)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="pesoPeca">Peso da Peça (g) *</label>
+                            <input type="number" id="pesoPeca" required min="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="pesoSuportes">Peso Suportes (g)</label>
+                            <input type="number" id="pesoSuportes" min="0" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="tempoHoras">Tempo Impressão (h) *</label>
+                            <input type="number" id="tempoHoras" required min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="tempoMinutos">Tempo (min)</label>
+                            <input type="number" id="tempoMinutos" min="0" max="59" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="tempoAcabamento">Acabamento (min)</label>
+                            <input type="number" id="tempoAcabamento" min="0" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="nivelEmbalagem">Embalagem *</label>
+                            <select id="nivelEmbalagem" required>
+                                <option value="1">Nível 1 - Básica (R$ 2)</option>
+                                <option value="2" selected>Nível 2 - Padrão (R$ 5)</option>
+                                <option value="3">Nível 3 - Premium (R$ 12)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="canalVenda">Canal de Venda *</label>
+                            <select id="canalVenda" required>
+                                <option value="">Selecione...</option>
+                                <option value="Shopee Base">Shopee Base (13%)</option>
+                                <option value="Mercado Livre Clássico">Mercado Livre Clássico (16%)</option>
+                                <option value="Mercado Livre Premium">Mercado Livre Premium (18%)</option>
+                                <option value="Instagram/WhatsApp">Instagram/WhatsApp (5%)</option>
+                                <option value="Loja Própria">Loja Própria (3%)</option>
+                                <option value="Venda Direta">Venda Direta (0%)</option>
+                            </select>
+                        </div>
+                        <div class="form-group full-width">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-calculator"></i> Calcular Preço
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Resultado do Cálculo -->
+                <div class="result-card" id="resultadoCalculo" style="display: none;">
+                    <h3><i class="fas fa-check-circle"></i> Resultado do Cálculo</h3>
+                    <div class="result-grid">
+                        <div class="result-item">
+                            <label>Custo Material:</label>
+                            <span id="resultCustoMaterial">R$ 0,00</span>
+                        </div>
+                        <div class="result-item">
+                            <label>Custo Máquina:</label>
+                            <span id="resultCustoMaquina">R$ 0,00</span>
+                        </div>
+                        <div class="result-item">
+                            <label>Custo Mão de Obra:</label>
+                            <span id="resultCustoMaoObra">R$ 0,00</span>
+                        </div>
+                        <div class="result-item">
+                            <label>Custo Fixo:</label>
+                            <span id="resultCustoFixo">R$ 0,00</span>
+                        </div>
+                        <div class="result-item">
+                            <label>Custo Embalagem:</label>
+                            <span id="resultCustoEmbalagem">R$ 0,00</span>
+                        </div>
+                        <div class="result-item highlight">
+                            <label>CUSTO TOTAL:</label>
+                            <span id="resultCustoTotal">R$ 0,00</span>
+                        </div>
+                        <div class="result-item highlight">
+                            <label>PREÇO MÍNIMO:</label>
+                            <span id="resultPrecoMinimo">R$ 0,00</span>
+                        </div>
+                        <div class="result-item success">
+                            <label>PREÇO SUGERIDO:</label>
+                            <span id="resultPrecoSugerido">R$ 0,00</span>
+                        </div>
+                        <div class="result-item success">
+                            <label>LUCRO UNITÁRIO:</label>
+                            <span id="resultLucro">R$ 0,00</span>
+                        </div>
+                        <div class="result-item success">
+                            <label>MARGEM:</label>
+                            <span id="resultMargem">0%</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-success" id="salvarProduto">
+                        <i class="fas fa-save"></i> Salvar Produto
+                    </button>
+                </div>
+            </div>
+
+            <!-- Produtos Page -->
+            <div class="page" id="produtos-page">
+                <div class="page-header">
+                    <h1><i class="fas fa-box"></i> Meus Produtos</h1>
+                    <p>Gerenciar catálogo de produtos</p>
+                </div>
+
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3>Lista de Produtos</h3>
+                        <div class="table-actions">
+                            <input type="text" id="searchProduto" placeholder="Buscar produto...">
+                            <button class="btn btn-sm btn-primary" onclick="exportarProdutos()">
+                                <i class="fas fa-download"></i> Exportar
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Produto</th>
+                                    <th>Material</th>
+                                    <th>Peso (g)</th>
+                                    <th>Tempo</th>
+                                    <th>Custo</th>
+                                    <th>Preço</th>
+                                    <th>Lucro</th>
+                                    <th>Margem</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="produtosTable">
+                                <tr>
+                                    <td colspan="10" class="text-center">Nenhum produto cadastrado</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estoque Page -->
+            <div class="page" id="estoque-page">
+                <div class="page-header">
+                    <h1><i class="fas fa-warehouse"></i> Controle de Estoque</h1>
+                    <p>Gerenciar materiais e insumos</p>
+                </div>
+
+                <div class="form-card">
+                    <h3><i class="fas fa-plus-circle"></i> Adicionar Material</h3>
+                    <form id="estoqueForm" class="form-grid">
+                        <div class="form-group">
+                            <label for="materialNome">Material *</label>
+                            <input type="text" id="materialNome" required placeholder="Ex: PLA, ABS, Resina">
+                        </div>
+                        <div class="form-group">
+                            <label for="materialCor">Cor</label>
+                            <input type="text" id="materialCor" placeholder="Ex: Branco, Preto">
+                        </div>
+                        <div class="form-group">
+                            <label for="materialPeso">Peso (Kg) *</label>
+                            <input type="number" id="materialPeso" required min="0" step="0.001">
+                        </div>
+                        <div class="form-group">
+                            <label for="materialCusto">Custo/Kg (R$) *</label>
+                            <input type="number" id="materialCusto" required min="0" step="0.01">
+                        </div>
+                        <div class="form-group full-width">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Adicionar ao Estoque
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3>Materiais em Estoque</h3>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Material</th>
+                                    <th>Cor</th>
+                                    <th>Peso Inicial</th>
+                                    <th>Peso Usado</th>
+                                    <th>Peso Restante</th>
+                                    <th>Custo/Kg</th>
+                                    <th>Valor Estoque</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="estoqueTable">
+                                <tr>
+                                    <td colspan="9" class="text-center">Nenhum material cadastrado</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vendas Page -->
+            <div class="page" id="vendas-page">
+                <div class="page-header">
+                    <h1><i class="fas fa-shopping-cart"></i> Registro de Vendas</h1>
+                    <p>Histórico de vendas realizadas</p>
+                </div>
+
+                <div class="form-card">
+                    <h3><i class="fas fa-plus-circle"></i> Registrar Nova Venda</h3>
+                    <form id="vendaForm" class="form-grid">
+                        <div class="form-group">
+                            <label for="vendaData">Data *</label>
+                            <input type="date" id="vendaData" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="vendaProduto">Produto *</label>
+                            <select id="vendaProduto" required>
+                                <option value="">Selecione o produto...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="vendaQuantidade">Quantidade *</label>
+                            <input type="number" id="vendaQuantidade" required min="1" value="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="vendaCliente">Cliente</label>
+                            <input type="text" id="vendaCliente" placeholder="Nome do cliente">
+                        </div>
+                        <div class="form-group full-width">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-check"></i> Registrar Venda
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3>Histórico de Vendas</h3>
+                        <div class="table-actions">
+                            <input type="text" id="searchVenda" placeholder="Buscar venda...">
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Produto</th>
+                                    <th>Quantidade</th>
+                                    <th>Preço Unit.</th>
+                                    <th>Total Bruto</th>
+                                    <th>Custo</th>
+                                    <th>Lucro</th>
+                                    <th>Cliente</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="vendasTable">
+                                <tr>
+                                    <td colspan="9" class="text-center">Nenhuma venda registrada</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Relatórios Page -->
+            <div class="page" id="relatorios-page">
+                <div class="page-header">
+                    <h1><i class="fas fa-file-alt"></i> Relatórios</h1>
+                    <p>Análises e relatórios detalhados</p>
+                </div>
+
+                <div class="reports-grid">
+                    <div class="report-card">
+                        <i class="fas fa-chart-line"></i>
+                        <h3>Relatório Financeiro</h3>
+                        <p>Análise completa de receitas, custos e lucros</p>
+                        <button class="btn btn-primary" onclick="gerarRelatorioFinanceiro()">
+                            <i class="fas fa-file-pdf"></i> Gerar PDF
+                        </button>
+                    </div>
+                    <div class="report-card">
+                        <i class="fas fa-box"></i>
+                        <h3>Relatório de Produtos</h3>
+                        <p>Performance de produtos e análise de viabilidade</p>
+                        <button class="btn btn-primary" onclick="gerarRelatorioProdutos()">
+                            <i class="fas fa-file-excel"></i> Gerar Excel
+                        </button>
+                    </div>
+                    <div class="report-card">
+                        <i class="fas fa-warehouse"></i>
+                        <h3>Relatório de Estoque</h3>
+                        <p>Movimentação de materiais e alertas</p>
+                        <button class="btn btn-primary" onclick="gerarRelatorioEstoque()">
+                            <i class="fas fa-file-pdf"></i> Gerar PDF
+                        </button>
+                    </div>
+                    <div class="report-card">
+                        <i class="fas fa-shopping-cart"></i>
+                        <h3>Relatório de Vendas</h3>
+                        <p>Histórico de vendas por período</p>
+                        <button class="btn btn-primary" onclick="gerarRelatorioVendas()">
+                            <i class="fas fa-file-excel"></i> Gerar Excel
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configurações Page -->
+            <div class="page" id="configuracoes-page">
+                <div class="page-header">
+                    <h1><i class="fas fa-cog"></i> Configurações</h1>
+                    <p>Configurar custos e parâmetros da operação</p>
+                </div>
+
+                <div class="config-grid">
+                    <!-- Materiais -->
+                    <div class="config-card">
+                        <h3><i class="fas fa-cube"></i> Custos de Materiais</h3>
+                        <div class="config-form">
+                            <div class="config-item">
+                                <label>Filamento PLA/ABS (R$/Kg)</label>
+                                <input type="number" id="configFilamento" value="130" step="0.01">
+                            </div>
+                            <div class="config-item">
+                                <label>Resina (R$/Kg)</label>
+                                <input type="number" id="configResina" value="150" step="0.01">
+                            </div>
+                            <div class="config-item">
+                                <label>Premium TPU/PETG (R$/Kg)</label>
+                                <input type="number" id="configPremium" value="180" step="0.01">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Operacionais -->
+                    <div class="config-card">
+                        <h3><i class="fas fa-bolt"></i> Custos Operacionais</h3>
+                        <div class="config-form">
+                            <div class="config-item">
+                                <label>Energia Elétrica (R$/kWh)</label>
+                                <input type="number" id="configEnergia" value="1.1" step="0.01">
+                            </div>
+                            <div class="config-item">
+                                <label>Potência Impressora (Watts)</label>
+                                <input type="number" id="configPotencia" value="150">
+                            </div>
+                            <div class="config-item">
+                                <label>Amortização Máquina (R$/h)</label>
+                                <input type="number" id="configAmortizacao" value="1.5" step="0.01">
+                            </div>
+                            <div class="config-item">
+                                <label>Taxa de Falha (%)</label>
+                                <input type="number" id="configTaxaFalha" value="10" step="0.1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Custos Fixos -->
+                    <div class="config-card">
+                        <h3><i class="fas fa-building"></i> Custos Fixos Mensais</h3>
+                        <div class="config-form">
+                            <div class="config-item">
+                                <label>MEI / Impostos (R$)</label>
+                                <input type="number" id="configMEI" value="75" step="0.01">
+                            </div>
+                            <div class="config-item">
+                                <label>Software/Assinaturas (R$)</label>
+                                <input type="number" id="configSoftware" value="95" step="0.01">
+                            </div>
+                            <div class="config-item">
+                                <label>Internet (R$)</label>
+                                <input type="number" id="configInternet" value="100" step="0.01">
+                            </div>
+                            <div class="config-item">
+                                <label>Aluguel/Espaço (R$)</label>
+                                <input type="number" id="configAluguel" value="500" step="0.01">
+                            </div>
+                            <div class="config-item">
+                                <label>Marketing (R$)</label>
+                                <input type="number" id="configMarketing" value="200" step="0.01">
+                            </div>
+                            <div class="config-item">
+                                <label>Embalagens (R$)</label>
+                                <input type="number" id="configEmbalagens" value="150" step="0.01">
+                            </div>
+                            <div class="config-item">
+                                <label>Manutenção (R$)</label>
+                                <input type="number" id="configManutencao" value="100" step="0.01">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Metas -->
+                    <div class="config-card">
+                        <h3><i class="fas fa-bullseye"></i> Metas e Remuneração</h3>
+                        <div class="config-form">
+                            <div class="config-item">
+                                <label>Salário Desejado (R$/mês)</label>
+                                <input type="number" id="configSalario" value="6000" step="0.01">
+                            </div>
+                            <div class="config-item">
+                                <label>Horas de Trabalho/Mês</label>
+                                <input type="number" id="configHoras" value="160">
+                            </div>
+                            <div class="config-item">
+                                <label>Meta Produção Mensal</label>
+                                <input type="number" id="configMetaProducao" value="50">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="config-actions">
+                    <button class="btn btn-success" onclick="salvarConfiguracoes()">
+                        <i class="fas fa-save"></i> Salvar Configurações
+                    </button>
+                    <button class="btn btn-secondary" onclick="resetarConfiguracoes()">
+                        <i class="fas fa-undo"></i> Resetar Padrão
+                    </button>
+                    <button class="btn btn-primary" onclick="exportarDados()">
+                        <i class="fas fa-download"></i> Exportar Todos os Dados
+                    </button>
+                    <button class="btn btn-warning" onclick="importarDados()">
+                        <i class="fas fa-upload"></i> Importar Dados
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Mensagem</span>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/calculadora.js"></script>
+    <script src="js/produtos.js"></script>
+    <script src="js/estoque.js"></script>
+    <script src="js/vendas.js"></script>
+    <script src="js/relatorios.js"></script>
+    <script src="js/configuracoes.js"></script>
+</body>
+</html>
+
+# 🎯 Sistema de Gestão Arteks - Impressão 3D
+
+Sistema web completo para gestão operacional e financeira de negócios de impressão 3D.
+
+![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
+
+## 🚀 Funcionalidades
+
+### 📊 Dashboard
+- Visão geral de indicadores financeiros em tempo real
+- Gráficos de faturamento por canal de venda
+- Distribuição de custos por categoria
+- Top 5 produtos mais lucrativos
+
+### 🧮 Calculadora de Preços
+- Cálculo automático de:
+  - Custo de materiais (Filamento, Resina, Premium)
+  - Custo de máquina (energia + depreciação)
+  - Custo de mão de obra
+  - Custo fixo dissolvido
+  - Custo de embalagem
+  - Preço mínimo de venda
+  - Preço sugerido com margem de 50%
+- Análise de viabilidade por produto
+- Status visual (🟢 Ótimo, 🟡 Bom, 🟠 Regular, 🔴 Ruim)
+
+### 📦 Gerenciamento de Produtos
+- Cadastro completo de produtos
+- Visualização de todos os custos e margens
+- Edição e exclusão de produtos
+- Exportação para CSV
+- Busca e filtros
+
+### 🏭 Controle de Estoque
+- Registro de materiais (filamentos, resinas)
+- Controle de peso inicial, usado e restante
+- Alertas automáticos de estoque baixo
+- Cálculo do valor total em estoque
+- Histórico de movimentações
+
+### 💰 Registro de Vendas
+- Registro rápido de vendas
+- Vínculo automático com produtos
+- Atualização automática de estoque
+- Cálculo de lucro por venda
+- Histórico completo
+
+### 📈 Relatórios
+- **Relatório Financeiro (PDF)**: Resumo de faturamento, custos e lucros
+- **Relatório de Produtos (CSV)**: Análise detalhada de todos os produtos
+- **Relatório de Estoque (PDF)**: Status atual do estoque
+- **Relatório de Vendas (CSV)**: Histórico completo de vendas
+
+### ⚙️ Configurações
+- Custos de materiais personalizáveis
+- Custos operacionais (energia, máquina)
+- Custos fixos mensais
+- Metas e salário desejado
+- Taxas dos canais de venda
+- Backup e restauração de dados
+
+## 📋 Tecnologias Utilizadas
+
+- **HTML5**: Estrutura semântica
+- **CSS3**: Estilização moderna com gradientes e animações
+- **JavaScript**: Lógica de negócios e interatividade
+- **Chart.js**: Gráficos interativos
+- **Font Awesome**: Ícones
+- **LocalStorage**: Armazenamento local de dados
+
+## 🔧 Instalação
+
+### Opção 1: Uso Local
+
+1. Clone ou baixe este repositório
+2. Abra o arquivo `index.html` em qualquer navegador moderno
+3. O sistema está pronto para uso!
+
+```bash
+# Clonar repositório
+git clone https://github.com/arteksbrasil/gestao-arteks.git
+cd gestao-arteks
+
+# Abrir no navegador
+# Windows: start index.html
+# Mac: open index.html
+# Linux: xdg-open index.html
+```
+
+### Opção 2: Hospedar no GitHub Pages
+
+1. Faça fork deste repositório
+2. Vá em Settings > Pages
+3. Selecione a branch `main` e pasta `/root`
+4. Seu site estará disponível em: `https://seu-usuario.github.io/gestao-arteks/`
+
+### Opção 3: Hospedar em Servidor Web
+
+Basta fazer upload dos arquivos para qualquer servidor web (Apache, Nginx, etc.)
+
+```bash
+# Exemplo usando Python
+python -m http.server 8000
+
+# Acesse: http://localhost:8000
+```
+
+## 💾 Armazenamento de Dados
+
+O sistema utiliza **LocalStorage** do navegador para armazenar todos os dados localmente. Isso significa:
+
+✅ **Vantagens:**
+- Não precisa de servidor ou banco de dados
+- Funciona 100% offline
+- Dados ficam no próprio computador
+- Zero custo de hospedagem
+
+⚠️ **Atenções:**
+- Dados ficam apenas no navegador usado
+- Limpar cache pode apagar os dados
+- **SEMPRE faça backups regularmente!**
+
+### Como fazer backup:
+
+1. Vá em **Configurações**
+2. Clique em **Exportar Todos os Dados**
+3. Salve o arquivo `.json` gerado
+4. Guarde em local seguro (nuvem, pen drive, etc)
+
+### Como restaurar backup:
+
+1. Vá em **Configurações**
+2. Clique em **Importar Dados**
+3. Selecione o arquivo `.json` do backup
+
+## 📖 Guia de Uso Rápido
+
+### 1️⃣ Configurar Sistema
+
+Primeiro acesso: Vá em **Configurações** e ajuste:
+- Preços dos materiais que você usa
+- Sua tarifa de energia elétrica
+- Custos fixos mensais (aluguel, internet, etc)
+- Seu salário desejado
+- Meta de produção mensal
+
+### 2️⃣ Cadastrar Produto
+
+1. Vá em **Calculadora**
+2. Preencha os dados do produto:
+   - Nome
+   - Tipo de material
+   - Peso da peça e suportes
+   - Tempo de impressão
+   - Tempo de acabamento
+   - Nível de embalagem
+   - Canal de venda
+3. Clique em **Calcular Preço**
+4. Analise os resultados
+5. Clique em **Salvar Produto**
+
+### 3️⃣ Registrar Estoque
+
+1. Vá em **Estoque**
+2. Adicione seus materiais (filamentos, resinas)
+3. Informe peso e custo
+4. O sistema alertará quando estiver baixo
+
+### 4️⃣ Registrar Venda
+
+1. Vá em **Vendas**
+2. Selecione o produto vendido
+3. Informe quantidade e cliente
+4. Clique em **Registrar Venda**
+5. O estoque será atualizado automaticamente!
+
+### 5️⃣ Acompanhar Resultados
+
+- **Dashboard**: Veja indicadores em tempo real
+- **Produtos**: Analise quais são mais lucrativos
+- **Relatórios**: Gere relatórios detalhados
+
+## 🎨 Personalização
+
+### Cores
+
+Edite o arquivo `css/styles.css` e altere as variáveis CSS:
+
+```css
+:root {
+    --primary-color: #1e3a8a;    /* Cor principal */
+    --secondary-color: #3b82f6;  /* Cor secundária */
+    --success-color: #10b981;    /* Verde sucesso */
+    --warning-color: #f59e0b;    /* Amarelo aviso */
+    --danger-color: #ef4444;     /* Vermelho perigo */
+}
+```
+
+### Logo
+
+Substitua o ícone no `sidebar-header` em `index.html`:
+
+```html
+<div class="sidebar-header">
+    <h2><i class="fas fa-cube"></i> Sua Marca</h2>
+    <p>Seu Slogan</p>
+</div>
+```
+
+## 🔐 Segurança e Privacidade
+
+- ✅ Todos os dados ficam **apenas no seu navegador**
+- ✅ Nenhuma informação é enviada para servidores externos
+- ✅ Não há rastreamento ou coleta de dados
+- ✅ Funciona 100% offline
+- ⚠️ **Importante**: Faça backups regulares!
+
+## 🐛 Solução de Problemas
+
+### Dados não aparecem após recarregar?
+- Verifique se não está em modo anônimo/privado
+- Confirme que os cookies estão habilitados
+- Restaure o último backup
+
+### Gráficos não carregam?
+- Verifique sua conexão com internet (para carregar Chart.js)
+- Limpe o cache do navegador
+- Tente outro navegador
+
+### Cálculos parecem errados?
+- Revise as **Configurações**
+- Confirme que todos os custos estão corretos
+- Recalcule os produtos após alterar configurações
+
+## 📞 Suporte
+
+- **GitHub Issues**: [github.com/arteksbrasil/gestao-arteks/issues](https://github.com/arteksbrasil/gestao-arteks/issues)
+- **Email**: contato@arteks.com.br
+- **WhatsApp**: (11) 99999-9999
+
+## 🤝 Contribuindo
+
+Contribuições são bem-vindas! Para contribuir:
+
+1. Faça fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/MinhaFeature`)
+3. Commit suas mudanças (`git commit -m 'Add: Minha nova feature'`)
+4. Push para a branch (`git push origin feature/MinhaFeature`)
+5. Abra um Pull Request
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+## 🎉 Agradecimentos
+
+- Font Awesome pelos ícones
+- Chart.js pelos gráficos
+- Comunidade de impressão 3D brasileira
+
+---
+
+**Desenvolvido com ❤️ por Arteks Brasil**
+
+© 2026 Arteks - Todos os direitos reservados
+
+**Versão:** 1.0.0  
+**Última atualização:** Fevereiro 2026
+
+# 🔗 Guia de Integração com GitHub
+
+Este guia mostra como integrar o Sistema Arteks ao seu repositório GitHub existente.
+
+## 📂 Repositório Existente
+
+Você já tem: `https://github.com/arteksbrasil/gestao-arteks`
+
+## 🚀 Opções de Integração
+
+### Opção 1: Substituir o index.html Atual
+
+Se você quer substituir completamente o sistema existente:
+
+```bash
+# 1. Clone seu repositório
+git clone https://github.com/arteksbrasil/gestao-arteks.git
+cd gestao-arteks
+
+# 2. Faça backup do index.html atual
+mv index.html index_backup.html
+
+# 3. Copie os novos arquivos
+# (Copie todos os arquivos do sistema-web-arteks para a pasta)
+
+# 4. Commit e push
+git add .
+git commit -m "feat: Sistema completo de gestão de impressão 3D"
+git push origin main
+```
+
+### Opção 2: Manter Ambas as Versões
+
+Se você quer manter o sistema antigo e adicionar o novo:
+
+```bash
+# 1. Clone seu repositório
+git clone https://github.com/arteksbrasil/gestao-arteks.git
+cd gestao-arteks
+
+# 2. Renomeie o index.html atual
+mv index.html sistema-simples.html
+
+# 3. Copie os novos arquivos
+# (Copie todos os arquivos do sistema-web-arteks)
+
+# 4. Crie página de escolha
+cat > index.html << 'EOF'
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arteks - Escolha o Sistema</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        p {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            font-size: 18px;
+            margin-bottom: 50px;
+        }
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+        .card h2 {
+            color: #1e3a8a;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        .card p {
+            color: #6b7280;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Arteks Gestão</h1>
+        <p>Escolha a versão do sistema que deseja usar</p>
+        
+        <div class="cards">
+            <div class="card" onclick="window.location.href='sistema-completo.html'">
+                <div class="icon">🚀</div>
+                <h2>Sistema Completo</h2>
+                <p>Sistema avançado com calculadora, estoque, vendas, relatórios e muito mais. Ideal para operações profissionais.</p>
+                <a href="sistema-completo.html" class="btn">Acessar Sistema Completo</a>
+            </div>
+            
+            <div class="card" onclick="window.location.href='sistema-simples.html'">
+                <div class="icon">⚡</div>
+                <h2>Sistema Simples</h2>
+                <p>Versão simplificada e rápida. Ideal para começar ou operações menores.</p>
+                <a href="sistema-simples.html" class="btn">Acessar Sistema Simples</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+EOF
+
+# 5. Renomeie o novo index.html
+mv index.html sistema-completo.html
+# Volte a criar o index de escolha acima
+
+# 6. Commit
+git add .
+git commit -m "feat: Adicionar sistema completo + página de escolha"
+git push origin main
+```
+
+### Opção 3: Usar Branch Separada
+
+Para testar antes de publicar:
+
+```bash
+# 1. Clone seu repositório
+git clone https://github.com/arteksbrasil/gestao-arteks.git
+cd gestao-arteks
+
+# 2. Crie nova branch
+git checkout -b sistema-completo
+
+# 3. Copie todos os arquivos do sistema-web-arteks
+
+# 4. Commit
+git add .
+git commit -m "feat: Sistema completo de gestão"
+git push origin sistema-completo
+
+# 5. Depois de testar, faça merge na main
+git checkout main
+git merge sistema-completo
+git push origin main
+```
+
+## 🌐 Ativar GitHub Pages
+
+Depois de fazer push dos arquivos:
+
+1. Vá em `https://github.com/arteksbrasil/gestao-arteks/settings/pages`
+2. Em **Source**, selecione:
+   - Branch: `main`
+   - Folder: `/root`
+3. Clique em **Save**
+4. Aguarde alguns minutos
+5. Seu site estará em: `https://arteksbrasil.github.io/gestao-arteks/`
+
+## 📱 Domínio Customizado (Opcional)
+
+Se você tem um domínio próprio:
+
+1. No seu provedor de domínio, crie um registro CNAME:
+   ```
+   www.seudominio.com.br -> arteksbrasil.github.io
+   ```
+
+2. No GitHub Pages settings, adicione:
+   - Custom domain: `www.seudominio.com.br`
+   - ✅ Enforce HTTPS
+
+3. Seu site estará em: `https://www.seudominio.com.br`
+
+## 🔄 Atualizar o Sistema
+
+Para atualizar o sistema no futuro:
+
+```bash
+# 1. Entre na pasta do repositório
+cd gestao-arteks
+
+# 2. Faça as alterações necessárias nos arquivos
+
+# 3. Commit e push
+git add .
+git commit -m "update: Descrição da atualização"
+git push origin main
+
+# 4. GitHub Pages atualiza automaticamente em ~5 minutos
+```
+
+## 📁 Estrutura Recomendada Final
+
+```
+gestao-arteks/
+├── index.html              # Página principal (ou de escolha)
+├── sistema-completo.html   # Sistema completo (opcional)
+├── sistema-simples.html    # Sistema antigo (opcional)
+├── css/
+│   └── styles.css
+├── js/
+│   ├── app.js
+│   ├── calculadora.js
+│   ├── produtos.js
+│   ├── estoque.js
+│   ├── vendas.js
+│   ├── relatorios.js
+│   └── configuracoes.js
+├── assets/                 # Imagens, logos, etc
+├── README.md
+└── LICENSE
+```
+
+## ✅ Checklist Pós-Deploy
+
+- [ ] Testar todos os links
+- [ ] Verificar se os gráficos carregam
+- [ ] Testar em mobile
+- [ ] Verificar se as fórmulas calculam corretamente
+- [ ] Testar exportação de dados
+- [ ] Verificar se o LocalStorage funciona
+- [ ] Testar em diferentes navegadores
+
+## 🐛 Troubleshooting
+
+**Página não carrega:**
+- Verifique se o GitHub Pages está ativado
+- Aguarde 5-10 minutos após o push
+- Limpe o cache do navegador
+
+**CSS/JS não carregam:**
+- Verifique os caminhos dos arquivos
+- Confirme que as pastas css/ e js/ existem
+- Veja o console do navegador (F12) para erros
+
+**LocalStorage não funciona:**
+- Verifique se está usando HTTPS
+- Confirme que cookies estão habilitados
+- Teste em modo anônimo
+
+## 📞 Suporte
+
+Se precisar de ajuda:
+- Abra uma issue: https://github.com/arteksbrasil/gestao-arteks/issues
+- Email: contato@arteks.com.br
+
+---
+
+**Boa sorte com seu sistema! 🚀**
