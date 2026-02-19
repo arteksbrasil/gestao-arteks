@@ -14,7 +14,7 @@
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
         .input-group { margin-bottom: 1rem; }
         label { display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: #64748b; }
-        input { width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; }
+        input, select { width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; }
         .total-box { background: #f1f5f9; padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--s); }
         .btn-calc { background: var(--s); color: white; border: none; padding: 1rem; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 1rem; }
         table { width: 100%; border-collapse: collapse; }
@@ -91,25 +91,61 @@
     </div>
 </div>
 
+<div id="o" class="tab">
+    <div class="card">
+        <h2>Novo Pedido</h2>
+        <div class="input-group">
+            <label>Produto</label>
+            <select id="prodSelect">
+                <option value="">Selecione um Produto</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label>Quantidade</label>
+            <input type="number" id="qty" value="1" min="1">
+        </div>
+        <div class="input-group">
+            <label>Nome do Cliente</label>
+            <input type="text" id="customer" placeholder="Ex: João Silva">
+        </div>
+        <button class="btn-calc" onclick="addOrder()">Adicionar Pedido</button>
+    </div>
+
+    <div class="card">
+        <h3>Lista de Pedidos</h3>
+        <table id="orderTable">
+            <thead><tr><th>Cliente</th><th>Produto</th><th>Qtd</th><th>Total (R$)</th></tr></thead>
+            <tbody id="orderBody"></tbody>
+        </table>
+    </div>
+</div>
+
 <div id="c" class="tab">
     <div class="card">
         <h2>Custos Fixos da Arteks Brasil</h2>
-        <label>Energia Elétrica (R$ por KWh)</label>
-        <input type="number" id="kwh" value="0.85">
-        <label>Consumo Médio Impressora (Watts)</label>
-        <input type="number" id="watts" value="150">
-        <label>Margem de Lucro Desejada (%)</label>
-        <input type="number" id="profit" value="150">
+        <div class="input-group">
+            <label>Energia Elétrica (R$ por KWh)</label>
+            <input type="number" id="kwh" value="0.85">
+        </div>
+        <div class="input-group">
+            <label>Consumo Médio Impressora (Watts)</label>
+            <input type="number" id="watts" value="150">
+        </div>
+        <div class="input-group">
+            <label>Margem de Lucro Desejada (%)</label>
+            <input type="number" id="profit" value="150">
+        </div>
     </div>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('arteks_db')) || [];
+    let products = JSON.parse(localStorage.getItem('arteks_products')) || [];
+    let orders = JSON.parse(localStorage.getItem('arteks_orders')) || [];
 
     function tab(id) {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        render();
+        renderTab(id);
     }
 
     function calcular() {
@@ -122,12 +158,8 @@
         const watts = parseFloat(document.getElementById('watts').value);
         const margin = parseFloat(document.getElementById('profit').value) / 100;
 
-        // Cálculo de Material com Falha
         const matCusto = (weight / 1000) * filCost * (1 + failRate);
-        
-        // Cálculo de Energia (W / 1000 * horas * preço)
         const energyCusto = (watts / 1000) * hours * kwhPrice;
-
         const custoTotal = matCusto + energyCusto + labor;
         const precoVenda = custoTotal * (1 + margin);
 
@@ -142,24 +174,68 @@
             lucro: (precoVenda - custoTotal).toFixed(2)
         };
 
-        db.push(prod);
-        localStorage.setItem('arteks_db', JSON.stringify(db));
-        render();
+        products.push(prod);
+        localStorage.setItem('arteks_products', JSON.stringify(products));
+        renderTab('p');
     }
 
-    function render() {
-        const body = document.getElementById('prodBody');
-        body.innerHTML = db.map(p => `
-            <tr>
-                <td>${p.nome}</td>
-                <td>R$ ${p.custo}</td>
-                <td><strong>R$ ${p.venda}</strong></td>
-                <td style="color: var(--s)">R$ ${p.lucro}</td>
-            </tr>
-        `).reverse().join('');
+    function addOrder() {
+        const prodId = document.getElementById('prodSelect').value;
+        if (!prodId) {
+            alert('Selecione um produto!');
+            return;
+        }
+        const prod = products.find(p => p.id === parseInt(prodId));
+        const qty = parseFloat(document.getElementById('qty').value);
+        const customer = document.getElementById('customer').value || "Anônimo";
+        const total = qty * parseFloat(prod.venda);
+
+        const order = {
+            id: Date.now(),
+            customer,
+            prodName: prod.nome,
+            prodId: prod.id,
+            qty,
+            total: total.toFixed(2)
+        };
+
+        orders.push(order);
+        localStorage.setItem('arteks_orders', JSON.stringify(orders));
+        renderTab('o');
     }
 
-    render();
+    function renderTab(id) {
+        if (id === 'p') {
+            const prodBody = document.getElementById('prodBody');
+            prodBody.innerHTML = products.map(p => `
+                <tr>
+                    <td>${p.nome}</td>
+                    <td>R$ ${p.custo}</td>
+                    <td><strong>R$ ${p.venda}</strong></td>
+                    <td style="color: var(--s)">R$ ${p.lucro}</td>
+                </tr>
+            `).reverse().join('');
+        } else if (id === 'o') {
+            const select = document.getElementById('prodSelect');
+            select.innerHTML = '<option value="">Selecione um Produto</option>' + products.map(p => `
+                <option value="${p.id}">${p.nome} - R$ ${p.venda}</option>
+            `).join('');
+
+            const orderBody = document.getElementById('orderBody');
+            orderBody.innerHTML = orders.map(o => `
+                <tr>
+                    <td>${o.customer}</td>
+                    <td>${o.prodName}</td>
+                    <td>${o.qty}</td>
+                    <td>R$ ${o.total}</td>
+                </tr>
+            `).reverse().join('');
+        }
+        // Para 'c', não precisa renderizar nada dinâmico
+    }
+
+    // Inicialização
+    renderTab('p');
 </script>
 </body>
 </html>
