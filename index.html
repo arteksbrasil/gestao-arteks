@@ -2,569 +2,627 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Arteks Brasil - Precificação Técnica 3D</title>
-    <style>
-        :root { --p: #2563eb; --s: #10b981; --dark: #1e293b; --danger: #ef4444; }
-        body { font-family: 'Inter', system-ui, sans-serif; background: #f8fafc; margin: 0; color: #334155; }
-        nav { background: var(--dark); padding: 1rem; display: flex; gap: 10px; justify-content: center; }
-        nav button { background: transparent; color: white; border: 1px solid #475569; padding: 8px 16px; cursor: pointer; border-radius: 6px; }
-        .tab { display: none; padding: 2rem; max-width: 1100px; margin: auto; }
-        .tab.active { display: block; }
-        .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); margin-bottom: 2rem; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
-        .input-group { margin-bottom: 1rem; }
-        label { display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: #64748b; }
-        input, select { width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; }
-        .total-box { background: #f1f5f9; padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--s); }
-        .btn-calc { background: var(--s); color: white; border: none; padding: 1rem; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 1rem; }
-        table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 1rem; background: #f8fafc; border-bottom: 2px solid #e2e8f0; }
-        td { padding: 1rem; border-bottom: 1px solid #f1f5f9; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arteks - Sistema de Gestão de Impressão 3D</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-
-<nav>
-    <button onclick="tab('f')">🧮 Filamento</button>
-    <button onclick="tab('r')">🧪 Resina</button>
-    <button onclick="tab('o')">📋 Pedidos</button>
-    <button onclick="tab('c')">⚙️ Configurações</button>
-</nav>
-
-<div id="f" class="tab active">
-    <div class="card">
-        <h2>Precificação Filamento</h2>
-        <div class="grid">
-            <section>
-                <h3>Dados da Peça</h3>
-                <div class="input-group">
-                    <label>Nome do Projeto</label>
-                    <input type="text" id="f_name" placeholder="Ex: Vaso Geométrico">
-                </div>
-                <div class="input-group">
-                    <label>Peso Final (Gramas)</label>
-                    <input type="number" id="f_weight" value="100">
-                </div>
-                <div class="input-group">
-                    <label>Tempo de Impressão (Horas)</label>
-                    <input type="number" id="f_hours" value="10">
-                </div>
-                <div class="input-group">
-                    <label>Pintura</label>
-                    <select id="f_paint">
-                        <option value="none">Sem Pintura</option>
-                        <option value="simple">Simples</option>
-                        <option value="medium">Média</option>
-                        <option value="complex">Complexa</option>
-                    </select>
-                </div>
-            </section>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2><i class="fas fa-cube"></i> Arteks</h2>
+            <p>Gestão de Impressão 3D</p>
         </div>
-
-        <div class="total-box" id="f_results">
-            <!-- Resultados serão inseridos aqui -->
-        </div>
-        <button class="btn-calc" onclick="calcular('f')">Calcular e Salvar</button>
-    </div>
-
-    <div class="card">
-        <h3>Catálogo Filamento</h3>
-        <table id="f_prodTable">
-            <thead><tr><th>Nome</th><th>Custo Total</th><th>Cliente</th><th>Shopee</th><th>ML</th><th>Lucro</th></tr></thead>
-            <tbody id="f_prodBody"></tbody>
-        </table>
-    </div>
-</div>
-
-<div id="r" class="tab">
-    <div class="card">
-        <h2>Precificação Resina</h2>
-        <div class="grid">
-            <section>
-                <h3>Dados da Peça</h3>
-                <div class="input-group">
-                    <label>Nome do Projeto</label>
-                    <input type="text" id="r_name" placeholder="Ex: Miniatura">
-                </div>
-                <div class="input-group">
-                    <label>Peso Final (Gramas)</label>
-                    <input type="number" id="r_weight" value="100">
-                </div>
-                <div class="input-group">
-                    <label>Tempo de Impressão (Horas)</label>
-                    <input type="number" id="r_hours" value="8">
-                </div>
-                <div class="input-group">
-                    <label>Pintura</label>
-                    <select id="r_paint">
-                        <option value="none">Sem Pintura</option>
-                        <option value="simple">Simples</option>
-                        <option value="medium">Média</option>
-                        <option value="complex">Complexa</option>
-                    </select>
-                </div>
-            </section>
-        </div>
-
-        <div class="total-box" id="r_results">
-            <!-- Resultados serão inseridos aqui -->
-        </div>
-        <button class="btn-calc" onclick="calcular('r')">Calcular e Salvar</button>
-    </div>
-
-    <div class="card">
-        <h3>Catálogo Resina</h3>
-        <table id="r_prodTable">
-            <thead><tr><th>Nome</th><th>Custo Total</th><th>Cliente</th><th>Shopee</th><th>ML</th><th>Lucro</th></tr></thead>
-            <tbody id="r_prodBody"></tbody>
-        </table>
-    </div>
-</div>
-
-<div id="o" class="tab">
-    <div class="card">
-        <h2>Novo Pedido</h2>
-        <div class="input-group">
-            <label>Produto</label>
-            <select id="prodSelect">
-                <option value="">Selecione um Produto</option>
-            </select>
-        </div>
-        <div class="input-group">
-            <label>Quantidade</label>
-            <input type="number" id="qty" value="1" min="1">
-        </div>
-        <div class="input-group">
-            <label>Nome do Cliente</label>
-            <input type="text" id="customer" placeholder="Ex: João Silva">
-        </div>
-        <button class="btn-calc" onclick="addOrder()">Adicionar Pedido</button>
-    </div>
-
-    <div class="card">
-        <h3>Lista de Pedidos</h3>
-        <table id="orderTable">
-            <thead><tr><th>Cliente</th><th>Produto</th><th>Qtd</th><th>Total (R$)</th></tr></thead>
-            <tbody id="orderBody"></tbody>
-        </table>
-    </div>
-</div>
-
-<div id="c" class="tab">
-    <div class="card">
-        <h2>Configurações Gerais</h2>
-        <div class="grid">
-            <section>
-                <h3>Custos Fixos Compartilhados</h3>
-                <div class="input-group">
-                    <label>Aluguel (R$)</label>
-                    <input type="number" id="aluguel" value="210">
-                </div>
-                <div class="input-group">
-                    <label>Assinaturas de Softwares (R$)</label>
-                    <input type="number" id="softwares" value="95">
-                </div>
-                <div class="input-group">
-                    <label>Plataformas E-commerce (R$)</label>
-                    <input type="number" id="ecommerce" value="59.9">
-                </div>
-                <div class="input-group">
-                    <label>Taxa MEI (R$)</label>
-                    <input type="number" id="mei" value="60">
-                </div>
-                <div class="input-group">
-                    <label>Publicidade Mínima Fixa (R$)</label>
-                    <input type="number" id="pub" value="100">
-                </div>
-                <div class="input-group">
-                    <label>Condomínio (R$) - Apenas Filamento</label>
-                    <input type="number" id="condominio" value="100">
-                </div>
-                <div class="input-group">
-                    <label>Custo KWh (R$)</label>
-                    <input type="number" id="kwh" value="1.14">
-                </div>
-                <div class="input-group">
-                    <label>Embalagem (R$ por peça)</label>
-                    <input type="number" id="embalagem" value="3">
-                </div>
-                <div class="input-group">
-                    <label>Markup (%)</label>
-                    <input type="number" id="markup" value="2.5">
-                </div>
-                <div class="input-group">
-                    <label>Vida Útil Equipamentos (Meses)</label>
-                    <input type="number" id="vida_util" value="24">
-                </div>
-            </section>
-            <section>
-                <h3>Configurações Filamento</h3>
-                <div class="input-group">
-                    <label>Custo Filamento (R$/kg)</label>
-                    <input type="number" id="fil_cost" value="120">
-                </div>
-                <div class="input-group">
-                    <label>Potência Impressora (Watts)</label>
-                    <input type="number" id="fil_watts" value="350">
-                </div>
-                <div class="input-group">
-                    <label>Amortização Ender 3 KE (R$)</label>
-                    <input type="number" id="fil_amort" value="1500">
-                </div>
-                <div class="input-group">
-                    <label>Taxa de Falha (%)</label>
-                    <input type="number" id="fil_fail" value="10">
-                </div>
-                <div class="input-group">
-                    <label>Faturamento Previsto (R$)</label>
-                    <input type="number" id="fil_fat" value="4000">
-                </div>
-            </section>
-            <section>
-                <h3>Configurações Resina</h3>
-                <div class="input-group">
-                    <label>Custo Resina (R$/kg)</label>
-                    <input type="number" id="res_cost" value="130">
-                </div>
-                <div class="input-group">
-                    <label>Potência Impressora (Watts)</label>
-                    <input type="number" id="res_watts" value="96">
-                </div>
-                <div class="input-group">
-                    <label>Amortização Saturn S (R$)</label>
-                    <input type="number" id="res_amort1" value="1000">
-                </div>
-                <div class="input-group">
-                    <label>Amortização Anycubic Photon Mono (R$)</label>
-                    <input type="number" id="res_amort2" value="900">
-                </div>
-                <div class="input-group">
-                    <label>Álcool Limpeza (R$ por peça)</label>
-                    <input type="number" id="alcool" value="1.666666667">
-                </div>
-                <div class="input-group">
-                    <label>Taxa de Falha (%)</label>
-                    <input type="number" id="res_fail" value="5">
-                </div>
-                <div class="input-group">
-                    <label>Faturamento Previsto (R$)</label>
-                    <input type="number" id="res_fat" value="5000">
-                </div>
-            </section>
-            <section>
-                <h3>Configurações Pintura</h3>
-                <div class="input-group">
-                    <label>Custo Hora Mão de Obra (R$)</label>
-                    <input type="number" id="hora_mo" value="10">
-                </div>
-                <div class="input-group">
-                    <label>Valor Spray Primer/Verniz (R$)</label>
-                    <input type="number" id="spray_val" value="35">
-                </div>
-                <div class="input-group">
-                    <label>Qtd Peças por Spray</label>
-                    <input type="number" id="spray_qtd" value="20">
-                </div>
-                <h4>Filamento</h4>
-                <div class="input-group">
-                    <label>Tinta Simples (R$)</label>
-                    <input type="number" id="fil_paint_s" value="2">
-                </div>
-                <div class="input-group">
-                    <label>Tinta Média (R$)</label>
-                    <input type="number" id="fil_paint_m" value="4">
-                </div>
-                <div class="input-group">
-                    <label>Tinta Complexa (R$)</label>
-                    <input type="number" id="fil_paint_c" value="6">
-                </div>
-                <div class="input-group">
-                    <label>Horas Simples</label>
-                    <input type="number" id="fil_h_s" value="1">
-                </div>
-                <div class="input-group">
-                    <label>Horas Média</label>
-                    <input type="number" id="fil_h_m" value="4">
-                </div>
-                <div class="input-group">
-                    <label>Horas Complexa</label>
-                    <input type="number" id="fil_h_c" value="5">
-                </div>
-                <h4>Resina</h4>
-                <div class="input-group">
-                    <label>Tinta Simples (R$)</label>
-                    <input type="number" id="res_paint_s" value="1">
-                </div>
-                <div class="input-group">
-                    <label>Tinta Média (R$)</label>
-                    <input type="number" id="res_paint_m" value="3">
-                </div>
-                <div class="input-group">
-                    <label>Tinta Complexa (R$)</label>
-                    <input type="number" id="res_paint_c" value="5">
-                </div>
-                <div class="input-group">
-                    <label>Horas Simples</label>
-                    <input type="number" id="res_h_s" value="1">
-                </div>
-                <div class="input-group">
-                    <label>Horas Média</label>
-                    <input type="number" id="res_h_m" value="2">
-                </div>
-                <div class="input-group">
-                    <label>Horas Complexa</label>
-                    <input type="number" id="res_h_c" value="4">
-                </div>
-            </section>
-            <section>
-                <h3>Plataformas</h3>
-                <div class="input-group">
-                    <label>Taxa Shopee (%)</label>
-                    <input type="number" id="fee_shopee" value="0.2">
-                </div>
-                <div class="input-group">
-                    <label>Taxa ML (%)</label>
-                    <input type="number" id="fee_ml" value="0.19">
-                </div>
-                <div class="input-group">
-                    <label>Frete Adicional Shopee (R$)</label>
-                    <input type="number" id="frete_shopee" value="4">
-                </div>
-            </section>
+        <nav class="sidebar-nav">
+            <a href="#dashboard" class="nav-item active" data-page="dashboard">
+                <i class="fas fa-chart-line"></i> Dashboard
+            </a>
+            <a href="#calculadora" class="nav-item" data-page="calculadora">
+                <i class="fas fa-calculator"></i> Calculadora
+            </a>
+            <a href="#produtos" class="nav-item" data-page="produtos">
+                <i class="fas fa-box"></i> Produtos
+            </a>
+            <a href="#estoque" class="nav-item" data-page="estoque">
+                <i class="fas fa-warehouse"></i> Estoque
+            </a>
+            <a href="#vendas" class="nav-item" data-page="vendas">
+                <i class="fas fa-shopping-cart"></i> Vendas
+            </a>
+            <a href="#relatorios" class="nav-item" data-page="relatorios">
+                <i class="fas fa-file-alt"></i> Relatórios
+            </a>
+            <a href="#configuracoes" class="nav-item" data-page="configuracoes">
+                <i class="fas fa-cog"></i> Configurações
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <p>© 2026 Arteks Brasil</p>
         </div>
     </div>
-</div>
 
-<script>
-    let products = JSON.parse(localStorage.getItem('arteks_products')) || [];
-    let orders = JSON.parse(localStorage.getItem('arteks_orders')) || [];
-
-    function tab(id) {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        renderTab(id);
-    }
-
-    function getConfigs(type) {
-        const aluguel = parseFloat(document.getElementById('aluguel').value);
-        const softwares = parseFloat(document.getElementById('softwares').value);
-        const ecommerce = parseFloat(document.getElementById('ecommerce').value);
-        const mei = parseFloat(document.getElementById('mei').value);
-        const pub = parseFloat(document.getElementById('pub').value);
-        const kwh = parseFloat(document.getElementById('kwh').value);
-        const embalagem = parseFloat(document.getElementById('embalagem').value);
-        const markup = parseFloat(document.getElementById('markup').value);
-        const vida_util = parseFloat(document.getElementById('vida_util').value);
-        const hora_mo = parseFloat(document.getElementById('hora_mo').value);
-        const spray_val = parseFloat(document.getElementById('spray_val').value);
-        const spray_qtd = parseFloat(document.getElementById('spray_qtd').value);
-        const fee_shopee = parseFloat(document.getElementById('fee_shopee').value);
-        const fee_ml = parseFloat(document.getElementById('fee_ml').value);
-        const frete_shopee = parseFloat(document.getElementById('frete_shopee').value);
-
-        const spray_cost = spray_val / spray_qtd;
-
-        let fixed_base = aluguel + softwares + ecommerce + mei + pub;
-        let material_cost, watts, fail_rate, fat_previsto, amort_total, paint_s, paint_m, paint_c, h_s, h_m, h_c, additional_direct = 0;
-
-        if (type === 'f') {
-            const condominio = parseFloat(document.getElementById('condominio').value);
-            fixed_base += condominio;
-            material_cost = parseFloat(document.getElementById('fil_cost').value);
-            watts = parseFloat(document.getElementById('fil_watts').value);
-            fail_rate = parseFloat(document.getElementById('fil_fail').value) / 100;
-            fat_previsto = parseFloat(document.getElementById('fil_fat').value);
-            amort_total = parseFloat(document.getElementById('fil_amort').value) / vida_util;
-            paint_s = parseFloat(document.getElementById('fil_paint_s').value);
-            paint_m = parseFloat(document.getElementById('fil_paint_m').value);
-            paint_c = parseFloat(document.getElementById('fil_paint_c').value);
-            h_s = parseFloat(document.getElementById('fil_h_s').value);
-            h_m = parseFloat(document.getElementById('fil_h_m').value);
-            h_c = parseFloat(document.getElementById('fil_h_c').value);
-        } else {
-            material_cost = parseFloat(document.getElementById('res_cost').value);
-            watts = parseFloat(document.getElementById('res_watts').value);
-            fail_rate = parseFloat(document.getElementById('res_fail').value) / 100;
-            fat_previsto = parseFloat(document.getElementById('res_fat').value);
-            amort_total = (parseFloat(document.getElementById('res_amort1').value) + parseFloat(document.getElementById('res_amort2').value)) / vida_util;
-            paint_s = parseFloat(document.getElementById('res_paint_s').value);
-            paint_m = parseFloat(document.getElementById('res_paint_m').value);
-            paint_c = parseFloat(document.getElementById('res_paint_c').value);
-            h_s = parseFloat(document.getElementById('res_h_s').value);
-            h_m = parseFloat(document.getElementById('res_h_m').value);
-            h_c = parseFloat(document.getElementById('res_h_c').value);
-            additional_direct = parseFloat(document.getElementById('alcool').value);
-        }
-
-        const fixed_total = fixed_base + amort_total;
-        const dissolved = fixed_total / fat_previsto;
-
-        return { material_cost, watts, kwh, embalagem, fail_rate, dissolved, markup, hora_mo, spray_cost, paint_s, paint_m, paint_c, h_s, h_m, h_c, fee_shopee, fee_ml, frete_shopee, additional_direct };
-    }
-
-    function calcular(type) {
-        const configs = getConfigs(type);
-        const prefix = type === 'f' ? 'f_' : 'r_';
-        const name = document.getElementById(prefix + 'name').value || 'Sem Nome';
-        const weight = parseFloat(document.getElementById(prefix + 'weight').value);
-        const hours = parseFloat(document.getElementById(prefix + 'hours').value);
-        const paint_type = document.getElementById(prefix + 'paint').value;
-
-        // Cálculos Diretos
-        const material = (weight / 1000) * configs.material_cost;
-        const energy = (configs.watts / 1000) * hours * configs.kwh;
-        const direct = material + energy + configs.embalagem + configs.additional_direct;
-
-        // Indireto e Falhas
-        const indirect = configs.dissolved * direct;
-        const failure = configs.fail_rate * (direct + indirect);
-        let total_cost = direct + indirect + failure;
-
-        // Pintura
-        let paint_cost = 0;
-        let paint_desc = 'Sem Pintura';
-        if (paint_type !== 'none') {
-            let paint_base, hours_mo;
-            if (paint_type === 'simple') {
-                paint_base = configs.paint_s;
-                hours_mo = configs.h_s;
-                paint_desc = 'Simples';
-            } else if (paint_type === 'medium') {
-                paint_base = configs.paint_m;
-                hours_mo = configs.h_m;
-                paint_desc = 'Média';
-            } else {
-                paint_base = configs.paint_c;
-                hours_mo = configs.h_c;
-                paint_desc = 'Complexa';
-            }
-            paint_cost = paint_base + 2 * configs.spray_cost + (hours_mo * configs.hora_mo);
-        }
-        total_cost += paint_cost;
-
-        // Preços
-        const price_cliente = total_cost * configs.markup;
-        const price_shopee = Math.ceil(price_cliente + (price_cliente * configs.fee_shopee) + configs.frete_shopee);
-        const price_ml = Math.ceil(price_cliente + (price_cliente * configs.fee_ml));
-        const lucro = price_cliente - total_cost;
-
-        // Exibir Resultados
-        const results_div = document.getElementById(prefix + 'results');
-        results_div.innerHTML = `
-            <div class="grid">
-                <div>
-                    <span>Custo Direto:</span>
-                    <div>R$ ${direct.toFixed(2)}</div>
-                </div>
-                <div>
-                    <span>Custo Indireto:</span>
-                    <div>R$ ${indirect.toFixed(2)}</div>
-                </div>
-                <div>
-                    <span>Falhas:</span>
-                    <div>R$ ${failure.toFixed(2)}</div>
-                </div>
-                <div>
-                    <span>Pintura (${paint_desc}):</span>
-                    <div>R$ ${paint_cost.toFixed(2)}</div>
-                </div>
-                <div>
-                    <span>Custo Total:</span>
-                    <div style="font-weight: bold;">R$ ${total_cost.toFixed(2)}</div>
-                </div>
-                <div>
-                    <span>Preço Cliente:</span>
-                    <div style="color: var(--s); font-weight: 800;">R$ ${price_cliente.toFixed(0)}</div>
-                </div>
-                <div>
-                    <span>Preço Shopee:</span>
-                    <div>R$ ${price_shopee}</div>
-                </div>
-                <div>
-                    <span>Preço ML:</span>
-                    <div>R$ ${price_ml}</div>
-                </div>
-                <div>
-                    <span>Lucro:</span>
-                    <div style="color: var(--s);">R$ ${lucro.toFixed(2)}</div>
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="header-right">
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Admin</span>
                 </div>
             </div>
-        `;
+        </header>
 
-        // Salvar Produto
-        const prod = {
-            id: Date.now(),
-            type: type,
-            nome: name,
-            custo: total_cost.toFixed(2),
-            cliente: price_cliente.toFixed(0),
-            shopee: price_shopee,
-            ml: price_ml,
-            lucro: lucro.toFixed(2),
-            paint: paint_desc
-        };
-        products.push(prod);
-        localStorage.setItem('arteks_products', JSON.stringify(products));
-        renderTab(type);
-    }
+        <!-- Content Area -->
+        <div class="content" id="content">
+            
+            <!-- Dashboard Page -->
+            <div class="page active" id="dashboard-page">
+                <div class="page-header">
+                    <h1><i class="fas fa-chart-line"></i> Dashboard</h1>
+                    <p>Visão geral da operação</p>
+                </div>
 
-    function addOrder() {
-        const prodId = document.getElementById('prodSelect').value;
-        if (!prodId) return alert('Selecione um produto!');
-        const prod = products.find(p => p.id === parseInt(prodId));
-        const qty = parseFloat(document.getElementById('qty').value);
-        const customer = document.getElementById('customer').value || 'Anônimo';
-        const total = qty * parseFloat(prod.cliente);
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card primary">
+                        <div class="stat-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="faturamentoTotal">R$ 0,00</h3>
+                            <p>Faturamento Mensal</p>
+                        </div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="lucroTotal">R$ 0,00</h3>
+                            <p>Lucro Líquido</p>
+                        </div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-icon">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="margemMedia">0%</h3>
+                            <p>Margem Média</p>
+                        </div>
+                    </div>
+                    <div class="stat-card info">
+                        <div class="stat-icon">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="produtosVendidos">0</h3>
+                            <p>Produtos Vendidos</p>
+                        </div>
+                    </div>
+                </div>
 
-        const order = {
-            id: Date.now(),
-            customer,
-            prodName: prod.nome + ' (' + (prod.type === 'f' ? 'Filamento' : 'Resina') + ')',
-            prodId: prod.id,
-            qty,
-            total: total.toFixed(2)
-        };
+                <!-- Charts Row -->
+                <div class="charts-row">
+                    <div class="chart-card">
+                        <h3><i class="fas fa-chart-bar"></i> Faturamento por Canal</h3>
+                        <canvas id="canalVendasChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3><i class="fas fa-chart-pie"></i> Distribuição de Custos</h3>
+                        <canvas id="custosChart"></canvas>
+                    </div>
+                </div>
 
-        orders.push(order);
-        localStorage.setItem('arteks_orders', JSON.stringify(orders));
-        renderTab('o');
-    }
+                <!-- Recent Products -->
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3><i class="fas fa-trophy"></i> Top 5 Produtos Mais Lucrativos</h3>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Produto</th>
+                                    <th>Custo</th>
+                                    <th>Preço</th>
+                                    <th>Lucro</th>
+                                    <th>Margem</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="topProdutosTable">
+                                <tr>
+                                    <td colspan="6" class="text-center">Carregue produtos na calculadora</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
-    function renderTab(id) {
-        if (id === 'f' || id === 'r') {
-            const type = id;
-            const prodBody = document.getElementById(type + '_prodBody');
-            const filtered = products.filter(p => p.type === type);
-            prodBody.innerHTML = filtered.map(p => `
-                <tr>
-                    <td>${p.nome} (${p.paint})</td>
-                    <td>R$ ${p.custo}</td>
-                    <td><strong>R$ ${p.cliente}</strong></td>
-                    <td>R$ ${p.shopee}</td>
-                    <td>R$ ${p.ml}</td>
-                    <td style="color: var(--s)">R$ ${p.lucro}</td>
-                </tr>
-            `).reverse().join('');
-        } else if (id === 'o') {
-            const select = document.getElementById('prodSelect');
-            select.innerHTML = '<option value="">Selecione um Produto</option>' + products.map(p => `
-                <option value="${p.id}">${p.nome} (${p.type === 'f' ? 'Filamento' : 'Resina'}) - R$ ${p.cliente}</option>
-            `).join('');
+            <!-- Calculadora Page -->
+            <div class="page" id="calculadora-page">
+                <div class="page-header">
+                    <h1><i class="fas fa-calculator"></i> Calculadora de Preços</h1>
+                    <p>Calcule automaticamente custos e preços</p>
+                </div>
 
-            const orderBody = document.getElementById('orderBody');
-            orderBody.innerHTML = orders.map(o => `
-                <tr>
-                    <td>${o.customer}</td>
-                    <td>${o.prodName}</td>
-                    <td>${o.qty}</td>
-                    <td>R$ ${o.total}</td>
-                </tr>
-            `).reverse().join('');
-        }
-    }
+                <div class="form-card">
+                    <h3><i class="fas fa-plus-circle"></i> Adicionar Novo Produto</h3>
+                    <form id="produtoForm" class="form-grid">
+                        <div class="form-group">
+                            <label for="nomeProduto">Nome do Produto *</label>
+                            <input type="text" id="nomeProduto" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="tipoMaterial">Tipo de Material *</label>
+                            <select id="tipoMaterial" required>
+                                <option value="">Selecione...</option>
+                                <option value="Filamento">Filamento PLA/ABS</option>
+                                <option value="Resina">Resina</option>
+                                <option value="Premium">Premium (TPU/PETG)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="pesoPeca">Peso da Peça (g) *</label>
+                            <input type="number" id="pesoPeca" required min="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="pesoSuportes">Peso Suportes (g)</label>
+                            <input type="number" id="pesoSuportes" min="0" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="tempoHoras">Tempo Impressão (h) *</label>
+                            <input type="number" id="tempoHoras" required min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="tempoMinutos">Tempo (min)</label>
+                            <input type="number" id="tempoMinutos" min="0" max="59" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="tempoAcabamento">Acabamento (min)</label>
+                            <input type="number" id="tempoAcabamento" min="0" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="nivelEmbalagem">Embalagem *</label>
+                            <select id="nivelEmbalagem" required>
+                                <option value="1">Nível 1 - Básica (R$ 2)</option>
+                                <option value="2" selected>Nível 2 - Padrão (R$ 5)</option>
+                                <option value="3">Nível 3 - Premium (R$ 12)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="canalVenda">Canal de Venda *</label>
+                            <select id="canalVenda" required>
+                                <option value="">Selecione...</option>
+                                <option value="Shopee Base">Shopee Base (13%)</option>
+                                <option value="Mercado Livre Clássico">Mercado Livre Clássico (16%)</option>
+                                <option value="Mercado Livre Premium">Mercado Livre Premium (18%)</option>
+                                <option value="Instagram/WhatsApp">Instagram/WhatsApp (5%)</option>
+                                <option value="Loja Própria">Loja Própria (3%)</option>
+                                <option value="Venda Direta">Venda Direta (0%)</option>
+                            </select>
+                        </div>
+                        <div class="form-group full-width">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-calculator"></i> Calcular Preço
+                            </button>
+                        </div>
+                    </form>
+                </div>
 
-    // Inicialização
-    renderTab('f');
-</script>
+                <!-- Resultado do Cálculo -->
+                <div class="result-card" id="resultadoCalculo" style="display: none;">
+                    <h3><i class="fas fa-check-circle"></i> Resultado do Cálculo</h3>
+                    <div class="result-grid">
+                        <div class="result-item">
+                            <label>Custo Material:</label>
+                            <span id="resultCustoMaterial">R$ 0,00</span>
+                        </div>
+                        <div class="result-item">
+                            <label>Custo Máquina:</label>
+                            <span id="resultCustoMaquina">R$ 0,00</span>
+                        </div>
+                        <div class="result-item">
+                            <label>Custo Mão de Obra:</label>
+                            <span id="resultCustoMaoObra">R$ 0,00</span>
+                        </div>
+                        <div class="result-item">
+                            <label>Custo Fixo:</label>
+                            <span id="resultCustoFixo">R$ 0,00</span>
+                        </div>
+                        <div class="result-item">
+                            <label>Custo Embalagem:</label>
+                            <span id="resultCustoEmbalagem">R$ 0,00</span>
+                        </div>
+                        <div class="result-item highlight">
+                            <label>CUSTO TOTAL:</label>
+                            <span id="resultCustoTotal">R$ 0,00</span>
+                        </div>
+                        <div class="result-item highlight">
+                            <label>PREÇO MÍNIMO:</label>
+                            <span id="resultPrecoMinimo">R$ 0,00</span>
+                        </div>
+                        <div class="result-item success">
+                            <label>PREÇO SUGERIDO:</label>
+                            <span id="resultPrecoSugerido">R$ 0,00</span>
+                        </div>
+                        <div class="result-item success">
+                            <label>LUCRO UNITÁRIO:</label>
+                            <span id="resultLucro">R$ 0,00</span>
+                        </div>
+                        <div class="result-item success">
+                            <label>MARGEM:</label>
+                            <span id="resultMargem">0%</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-success" id="salvarProduto">
+                        <i class="fas fa-save"></i> Salvar Produto
+                    </button>
+                </div>
+            </div>
+
+            <!-- Produtos Page -->
+            <div class="page" id="produtos-page">
+                <div class="page-header">
+                    <h1><i class="fas fa-box"></i> Meus Produtos</h1>
+                    <p>Gerenciar catálogo de produtos</p>
+                </div>
+
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3>Lista de Produtos</h3>
+                        <div class="table-actions">
+                            <input type="text" id="searchProduto" placeholder="Buscar produto...">
+                            <button class="btn btn-sm btn-primary" onclick="exportarProdutos()">
+                                <i class="fas fa-download"></i> Exportar
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Produto</th>
+                                    <th>Material</th>
+                                    <th>Peso (g)</th>
+                                    <th>Tempo</th>
+                                    <th>Custo</th>
+                                    <th>Preço</th>
+                                    <th>Lucro</th>
+                                    <th>Margem</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="produtosTable">
+                                <tr>
+                                    <td colspan="10" class="text-center">Nenhum produto cadastrado</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estoque Page -->
+            <div class="page" id="estoque-page">
+                <div class="page-header">
+                    <h1><i class="fas fa-warehouse"></i> Controle de Estoque</h1>
+                    <p>Gerenciar materiais e insumos</p>
+                </div>
+
+                <div class="form-card">
+                    <h3><i class="fas fa-plus-circle"></i> Adicionar Material</h3>
+                    <form id="estoqueForm" class="form-grid">
+                        <div class="form-group">
+                            <label for="materialNome">Material *</label>
+                            <input type="text" id="materialNome" required placeholder="Ex: PLA, ABS, Resina">
+                        </div>
+                        <div class="form-group">
+                            <label for="materialCor">Cor</label>
+                            <input type="text" id="materialCor" placeholder="Ex: Branco, Preto">
+                        </div>
+                        <div class="form-group">
+                            <label for="materialPeso">Peso (Kg) *</label>
+                            <input type="number" id="materialPeso" required min="0" step="0.001">
+                        </div>
+                        <div class="form-group">
+                            <label for="materialCusto">Custo/Kg (R$) *</label>
+                            <input type="number" id="materialCusto" required min="0" step="0.01">
+                        </div>
+                        <div class="form-group full-width">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Adicionar ao Estoque
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3>Materiais em Estoque</h3>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Material</th>
+                                    <th>Cor</th>
+                                    <th>Peso Inicial</th>
+                                    <th>Peso Usado</th>
+                                    <th>Peso Restante</th>
+                                    <th>Custo/Kg</th>
+                                    <th>Valor Estoque</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="estoqueTable">
+                                <tr>
+                                    <td colspan="9" class="text-center">Nenhum material cadastrado</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vendas Page -->
+            <div class="page" id="vendas-page">
+                <div class="page-header">
+                    <h1><i class="fas fa-shopping-cart"></i> Registro de Vendas</h1>
+                    <p>Histórico de vendas realizadas</p>
+                </div>
+
+                <div class="form-card">
+                    <h3><i class="fas fa-plus-circle"></i> Registrar Nova Venda</h3>
+                    <form id="vendaForm" class="form-grid">
+                        <div class="form-group">
+                            <label for="vendaData">Data *</label>
+                            <input type="date" id="vendaData" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="vendaProduto">Produto *</label>
+                            <select id="vendaProduto" required>
+                                <option value="">Selecione o produto...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="vendaQuantidade">Quantidade *</label>
+                            <input type="number" id="vendaQuantidade" required min="1" value="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="vendaCliente">Cliente</label>
+                            <input type="text" id="vendaCliente" placeholder="Nome do cliente">
+                        </div>
+                        <div class="form-group full-width">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-check"></i> Registrar Venda
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3>Histórico de Vendas</h3>
+                        <div class="table-actions">
+                            <input type="text" id="searchVenda" placeholder="Buscar venda...">
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Produto</th>
+                                    <th>Quantidade</th>
+                                    <th>Preço Unit.</th>
+                                    <th>Total Bruto</th>
+                                    <th>Custo</th>
+                                    <th>Lucro</th>
+                                    <th>Cliente</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="vendasTable">
+                                <tr>
+                                    <td colspan="9" class="text-center">Nenhuma venda registrada</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Relatórios Page -->
+            <div class="page" id="relatorios-page">
+                <div class="page-header">
+                    <h1><i class="fas fa-file-alt"></i> Relatórios</h1>
+                    <p>Análises e relatórios detalhados</p>
+                </div>
+
+                <div class="reports-grid">
+                    <div class="report-card">
+                        <i class="fas fa-chart-line"></i>
+                        <h3>Relatório Financeiro</h3>
+                        <p>Análise completa de receitas, custos e lucros</p>
+                        <button class="btn btn-primary" onclick="gerarRelatorioFinanceiro()">
+                            <i class="fas fa-file-pdf"></i> Gerar PDF
+                        </button>
+                    </div>
+                    <div class="report-card">
+                        <i class="fas fa-box"></i>
+                        <h3>Relatório de Produtos</h3>
+                        <p>Performance de produtos e análise de viabilidade</p>
+                        <button class="btn btn-primary" onclick="gerarRelatorioProdutos()">
+                            <i class="fas fa-file-excel"></i> Gerar Excel
+                        </button>
+                    </div>
+                    <div class="report-card">
+                        <i class="fas fa-warehouse"></i>
+                        <h3>Relatório de Estoque</h3>
+                        <p>Movimentação de materiais e alertas</p>
+                        <button class="btn btn-primary" onclick="gerarRelatorioEstoque()">
+                            <i class="fas fa-file-pdf"></i> Gerar PDF
+                        </button>
+                    </div>
+                    <div class="report-card">
+                        <i class="fas fa-shopping-cart"></i>
+                        <h3>Relatório de Vendas</h3>
+                        <p>Histórico de vendas por período</p>
+                        <button class="btn btn-primary" onclick="gerarRelatorioVendas()">
+                            <i class="fas fa-file-excel"></i> Gerar Excel
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configurações Page -->
+            <div class="page" id="configuracoes-page">
+                <div class="page-header">
+                    <h1><i class="fas fa-cog"></i> Configurações</h1>
+                    <p>Configurar custos e parâmetros da operação</p>
+                </div>
+
+                <div class="config-grid">
+                    <!-- Materiais -->
+                    <div class="config-card">
+                        <h3><i class="fas fa-cube"></i> Custos de Materiais</h3>
+                        <div class="config-form">
+                            <div class="config-item">
+                                <label>Filamento PLA/ABS (R$/Kg)</label>
+                                <input type="number" id="configFilamento" value="130" step="0.01">
+                            </div>
+                            <div class="config-item">
+                                <label>Resina (R$/Kg)</label>
+                                <input type="number" id="configResina" value="150" step="0.01">
+                            </div>
+                            <div class="config-item">
+                                <label>Premium TPU/PETG (R$/Kg)</label>
+                                <input type="number" id="configPremium" value="180" step="0.01">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Operacionais -->
+                    <div class="config-card">
+                        <h3><i class="fas fa-bolt"></i> Custos Operacionais</h3>
+                        <div class="config-form">
+                            <div class="config-item">
+                                <label>Energia Elétrica (R$/kWh)</label>
+                                <input type="number" id="configEnergia" value="1.1" step="0.01">
+                            </div>
+                            <div class="config-item">
+                                <label>Potência Impressora (Watts)</label>
+                                <input type="number" id="configPotencia" value="150">
+                            </div>
+                            <div class="config-item">
+                                <label>Amortização Máquina (R$/h)</label>
+                                <input type="number" id="configAmortizacao" value="1.5" step="0.01">
+                            </div>
+                            <div class="config-item">
+                                <label>Taxa de Falha (%)</label>
+                                <input type="number" id="configTaxaFalha" value="10" step="0.1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Custos Fixos -->
+                    <div class="config-card">
+                        <h3><i class="fas fa-building"></i> Custos Fixos Mensais</h3>
+                        <div class="config-form">
+                            <div class="config-item">
+                                <label>MEI / Impostos (R$)</label>
+                                <input type="number" id="configMEI" value="75" step="0.01">
+                            </div>
+                            <div class="config-item">
+                                <label>Software/Assinaturas (R$)</label>
+                                <input type="number" id="configSoftware" value="95" step="0.01">
+                            </div>
+                            <div class="config-item">
+                                <label>Internet (R$)</label>
+                                <input type="number" id="configInternet" value="100" step="0.01">
+                            </div>
+                            <div class="config-item">
+                                <label>Aluguel/Espaço (R$)</label>
+                                <input type="number" id="configAluguel" value="500" step="0.01">
+                            </div>
+                            <div class="config-item">
+                                <label>Marketing (R$)</label>
+                                <input type="number" id="configMarketing" value="200" step="0.01">
+                            </div>
+                            <div class="config-item">
+                                <label>Embalagens (R$)</label>
+                                <input type="number" id="configEmbalagens" value="150" step="0.01">
+                            </div>
+                            <div class="config-item">
+                                <label>Manutenção (R$)</label>
+                                <input type="number" id="configManutencao" value="100" step="0.01">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Metas -->
+                    <div class="config-card">
+                        <h3><i class="fas fa-bullseye"></i> Metas e Remuneração</h3>
+                        <div class="config-form">
+                            <div class="config-item">
+                                <label>Salário Desejado (R$/mês)</label>
+                                <input type="number" id="configSalario" value="6000" step="0.01">
+                            </div>
+                            <div class="config-item">
+                                <label>Horas de Trabalho/Mês</label>
+                                <input type="number" id="configHoras" value="160">
+                            </div>
+                            <div class="config-item">
+                                <label>Meta Produção Mensal</label>
+                                <input type="number" id="configMetaProducao" value="50">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="config-actions">
+                    <button class="btn btn-success" onclick="salvarConfiguracoes()">
+                        <i class="fas fa-save"></i> Salvar Configurações
+                    </button>
+                    <button class="btn btn-secondary" onclick="resetarConfiguracoes()">
+                        <i class="fas fa-undo"></i> Resetar Padrão
+                    </button>
+                    <button class="btn btn-primary" onclick="exportarDados()">
+                        <i class="fas fa-download"></i> Exportar Todos os Dados
+                    </button>
+                    <button class="btn btn-warning" onclick="importarDados()">
+                        <i class="fas fa-upload"></i> Importar Dados
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Mensagem</span>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/calculadora.js"></script>
+    <script src="js/produtos.js"></script>
+    <script src="js/estoque.js"></script>
+    <script src="js/vendas.js"></script>
+    <script src="js/relatorios.js"></script>
+    <script src="js/configuracoes.js"></script>
 </body>
 </html>
