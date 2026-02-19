@@ -3,205 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arteks Brasil - ERP 3D</title>
-    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <title>Arteks Brasil - Gestão Profissional</title>
     <style>
-        :root { --primary: #007bff; --success: #28a745; --danger: #dc3545; --dark: #343a40; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: #f0f2f5; display: flex; flex-direction: column; min-height: 100vh; }
-        nav { background: var(--dark); padding: 10px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; position: sticky; top: 0; z-index: 100; }
-        nav button { padding: 10px 15px; background: transparent; color: white; border: 1px solid rgba(255,255,255,0.2); cursor: pointer; border-radius: 5px; transition: 0.3s; }
-        nav button:hover { background: rgba(255,255,255,0.1); border-color: white; }
-        .tab { display: none; padding: 20px; max-width: 1200px; margin: 0 auto; width: 100%; box-sizing: border-box; }
+        :root { --primary: #007bff; --success: #28a745; --warning: #ffc107; --dark: #212529; --light: #f8f9fa; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: #eef2f7; color: #333; }
+        nav { background: var(--dark); padding: 10px; display: flex; justify-content: center; gap: 15px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        nav button { padding: 10px 18px; background: transparent; color: white; border: 1px solid #444; cursor: pointer; border-radius: 6px; transition: 0.3s; font-weight: 500; }
+        nav button:hover { background: var(--primary); border-color: var(--primary); }
+        .tab { display: none; padding: 25px; max-width: 1100px; margin: auto; animation: fadeIn 0.4s; }
         .tab.active { display: block; }
-        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; }
-        th, td { border: 1px solid #eee; padding: 12px; text-align: left; }
-        th { background: var(--primary); color: white; }
-        tr:nth-child(even) { background: #fafafa; }
-        .machine-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .machine-card { background: white; padding: 15px; border-radius: 10px; border-top: 6px solid #ccc; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .busy { border-top-color: var(--danger); }
-        .idle { border-top-color: var(--success); }
-        .timer { font-size: 1.4em; font-weight: bold; color: var(--danger); margin: 10px 0; font-family: monospace; }
-        input, select, textarea { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 4px; }
-        .btn-main { background: var(--success); color: white; border: none; padding: 12px 20px; cursor: pointer; border-radius: 5px; font-weight: bold; width: 100%; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-bottom: 25px; border-top: 5px solid var(--primary); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.9em; color: #555; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; background: #fafafa; }
+        .btn-calc { background: var(--success); color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1.1em; transition: 0.2s; }
+        .btn-calc:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        .price-tag { background: #e9f7ef; padding: 15px; border-radius: 8px; border: 1px dashed var(--success); margin-top: 15px; }
+        .marketplace-prices { display: flex; gap: 10px; margin-top: 15px; }
+        .mp-card { flex: 1; padding: 10px; border-radius: 6px; text-align: center; font-size: 0.85em; background: #fff; border: 1px solid #eee; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; border-radius: 8px; overflow: hidden; }
+        th, td { padding: 14px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f4f6f9; color: #666; font-size: 0.85em; text-transform: uppercase; }
+        .status-badge { padding: 5px 10px; border-radius: 20px; font-size: 0.75em; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <nav>
     <button onclick="openTab('dashboard')">📊 Dashboard</button>
+    <button onclick="openTab('calc')">🧮 Precificação</button>
     <button onclick="openTab('pedidos')">📦 Pedidos</button>
-    <button onclick="openTab('frota')">⚙️ Frota</button>
-    <button onclick="openTab('estoque')">🧪 Estoque</button>
-    <button onclick="openTab('config')">⚙️ Configs</button>
+    <button onclick="openTab('config')">⚙️ Configurações</button>
 </nav>
-
-<div id="dashboard" class="tab active">
-    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-        <div class="card" style="flex: 1; min-width: 200px; text-align: center;">
-            <h3>Vendas Totais</h3>
-            <p id="dashVendas" style="font-size: 2em; color: var(--success);">R$ 0,00</p>
-        </div>
-        <div class="card" style="flex: 1; min-width: 200px; text-align: center;">
-            <h3>Pedidos Ativos</h3>
-            <p id="dashPedidos" style="font-size: 2em; color: var(--primary);">0</p>
-        </div>
-    </div>
-</div>
-
-<div id="pedidos" class="tab">
-    <div class="card">
-        <h2>Novo Pedido</h2>
-        <input type="text" id="cliente" placeholder="Nome do Cliente">
-        <select id="pedidoProduto"></select>
-        <input type="number" id="quantidade" value="1" min="1">
-        <button class="btn-main" onclick="adicionarPedido()">Cadastrar Pedido</button>
-    </div>
-    <div class="card">
-        <table id="pedidosTable"></table>
-    </div>
-</div>
-
-<div id="frota" class="tab">
-    <div class="card">
-        <h2>Gestão de Máquinas</h2>
-        <div class="machine-grid" id="maquinasContainer"></div>
-        <hr>
-        <input type="text" id="nomeMaquina" placeholder="Nome da Impressora">
-        <button onclick="adicionarMaquina()">Adicionar Máquina</button>
-    </div>
-</div>
-
-<div id="estoque" class="tab">
-    <div class="card" id="listaEstoque"></div>
-</div>
 
 <div id="config" class="tab">
     <div class="card">
-        <h2>Backup e Dados</h2>
-        <button onclick="exportarDados()">⬇️ Descarregar Backup (JSON)</button>
-        <input type="file" id="importFile" style="display:none" onchange="importarDados(this)">
-        <button onclick="document.getElementById('importFile').click()">⬆️ Carregar Backup</button>
-    </div>
-</div>
-
-<script>
-    // DATA PERSISTENCE
-    let pedidos = JSON.parse(localStorage.getItem('arteksPedidos')) || [];
-    let produtos = JSON.parse(localStorage.getItem('arteksProdutos')) || [{nome: "Exemplo PLA", precoVenda: 50.00, pesoPeca: 100, pesoSuporte: 10, material: "PLA/ABS"}];
-    let estoque = JSON.parse(localStorage.getItem('arteksEstoque')) || {'PLA/ABS': 5, 'Resina': 2};
-    let maquinas = JSON.parse(localStorage.getItem('arteksMaquinas')) || [];
-
-    function openTab(id) {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        if(id === 'frota') loadFrota();
-        if(id === 'pedidos') { loadPedidos(); loadSelects(); }
-        if(id === 'dashboard') updateDashboard();
-        if(id === 'estoque') loadEstoque();
-    }
-
-    // PEDIDOS LOGIC
-    function loadSelects() {
-        document.getElementById('pedidoProduto').innerHTML = produtos.map(p => `<option value="${p.nome}">${p.nome} - R$${p.precoVenda}</option>`).join('');
-    }
-
-    function adicionarPedido() {
-        const prod = produtos.find(p => p.nome === document.getElementById('pedidoProduto').value);
-        const novo = {
-            id: Date.now(),
-            cliente: document.getElementById('cliente').value,
-            produto: prod.nome,
-            qtd: parseInt(document.getElementById('quantidade').value),
-            valorTotal: prod.precoVenda * parseInt(document.getElementById('quantidade').value),
-            status: 'Novo',
-            pesoUsado: ((prod.pesoPeca + prod.pesoSuporte) / 1000) * parseInt(document.getElementById('quantidade').value),
-            estoqueBaixado: false
-        };
-        pedidos.push(novo);
-        save();
-        loadPedidos();
-    }
-
-    function loadPedidos() {
-        const table = document.getElementById('pedidosTable');
-        table.innerHTML = `<tr><th>ID</th><th>Cliente</th><th>Produto</th><th>Status</th><th>Ações</th></tr>`;
-        pedidos.forEach(p => {
-            table.innerHTML += `<tr>
-                <td>#${p.id.toString().slice(-4)}</td>
-                <td>${p.cliente}</td>
-                <td>${p.produto}</td>
-                <td><strong>${p.status}</strong></td>
-                <td><button onclick="removerPedido(${p.id})">❌</button></td>
-            </tr>`;
-        });
-    }
-
-    // FROTA LOGIC
-    function adicionarMaquina() {
-        const nome = document.getElementById('nomeMaquina').value;
-        if(!nome) return;
-        maquinas.push({nome, status: 'Livre', pedidoId: null, fim: null});
-        save();
-        loadFrota();
-    }
-
-    function loadFrota() {
-        const container = document.getElementById('maquinasContainer');
-        container.innerHTML = maquinas.map((m, i) => `
-            <div class="machine-card ${m.pedidoId ? 'busy' : 'idle'}">
-                <h3>${m.nome}</h3>
-                <p>Status: ${m.status}</p>
-                ${m.pedidoId ? `<p>Pedido: #${m.pedidoId.toString().slice(-4)}</p>` : ''}
-                <button onclick="${m.pedidoId ? `liberarMaquina(${i})` : `alocarMaquina(${i})`}">${m.pedidoId ? 'Finalizar' : 'Iniciar Impressão'}</button>
+        <h2>Custos Operacionais Mensais</h2>
+        <div class="grid">
+            <div class="input-group">
+                <label>Aluguel / Espaço (R$)</label>
+                <input type="number" id="cfgAluguel" value="210">
             </div>
-        `).join('');
-    }
-
-    function alocarMaquina(idx) {
-        const id = prompt("ID do pedido (últimos 4 dígitos):");
-        if(!id) return;
-        maquinas[idx].pedidoId = id;
-        maquinas[idx].status = 'Imprimindo';
-        save();
-        loadFrota();
-    }
-
-    function liberarMaquina(idx) {
-        maquinas[idx].pedidoId = null;
-        maquinas[idx].status = 'Livre';
-        save();
-        loadFrota();
-    }
-
-    // UTILS
-    function save() {
-        localStorage.setItem('arteksPedidos', JSON.stringify(pedidos));
-        localStorage.setItem('arteksMaquinas', JSON.stringify(maquinas));
-        localStorage.setItem('arteksEstoque', JSON.stringify(estoque));
-    }
-
-    function updateDashboard() {
-        const total = pedidos.reduce((a, b) => a + b.valorTotal, 0);
-        document.getElementById('dashVendas').innerText = `R$ ${total.toFixed(2)}`;
-        document.getElementById('dashPedidos').innerText = pedidos.filter(p => p.status !== 'Finalizado').length;
-    }
-
-    function exportarDados() {
-        const data = JSON.stringify(localStorage);
-        const blob = new Blob([data], {type: 'application/json'});
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = 'backup_arteks.json';
-        a.click();
-    }
-
-    function loadEstoque() {
-        document.getElementById('listaEstoque').innerHTML = "<h2>Saldos</h2>" + Object.entries(estoque).map(([m, q]) => `<p>${m}: <strong>${q.toFixed(2)} kg</strong></p>`).join('');
-    }
-
-    window.onload = () => { loadPedidos(); loadSelects(); };
-</script>
-</body>
-</html>
+            <div class="input-group">
+                <label>Assinaturas/Software (R$)</label>
+                <input type="number" id="cfgSoftwares" value="95">
+            </div>
+            <div class="input-group">
+                <label>Taxa MEI (R$)</label>
+                <input type="number" id="cfgMei" value="60">
+            </div>
+            <div class="input-group">
+                <label>Custo KWh Energia (R$)</label>
+                <input type="number" id="cfgKwh" value="1.14" step="0.01">
+            </div>
