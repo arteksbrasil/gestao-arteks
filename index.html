@@ -2,59 +2,164 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arteks Brasil - Gestão Profissional</title>
+    <title>Arteks Brasil - Precificação Técnica 3D</title>
     <style>
-        :root { --primary: #007bff; --success: #28a745; --warning: #ffc107; --dark: #212529; --light: #f8f9fa; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: #eef2f7; color: #333; }
-        nav { background: var(--dark); padding: 10px; display: flex; justify-content: center; gap: 15px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        nav button { padding: 10px 18px; background: transparent; color: white; border: 1px solid #444; cursor: pointer; border-radius: 6px; transition: 0.3s; font-weight: 500; }
-        nav button:hover { background: var(--primary); border-color: var(--primary); }
-        .tab { display: none; padding: 25px; max-width: 1100px; margin: auto; animation: fadeIn 0.4s; }
+        :root { --p: #2563eb; --s: #10b981; --dark: #1e293b; --danger: #ef4444; }
+        body { font-family: 'Inter', system-ui, sans-serif; background: #f8fafc; margin: 0; color: #334155; }
+        nav { background: var(--dark); padding: 1rem; display: flex; gap: 10px; justify-content: center; }
+        nav button { background: transparent; color: white; border: 1px solid #475569; padding: 8px 16px; cursor: pointer; border-radius: 6px; }
+        .tab { display: none; padding: 2rem; max-width: 1100px; margin: auto; }
         .tab.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-bottom: 25px; border-top: 5px solid var(--primary); }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
-        .input-group { margin-bottom: 15px; }
-        label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.9em; color: #555; }
-        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; background: #fafafa; }
-        .btn-calc { background: var(--success); color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1.1em; transition: 0.2s; }
-        .btn-calc:hover { transform: translateY(-2px); filter: brightness(1.1); }
-        .price-tag { background: #e9f7ef; padding: 15px; border-radius: 8px; border: 1px dashed var(--success); margin-top: 15px; }
-        .marketplace-prices { display: flex; gap: 10px; margin-top: 15px; }
-        .mp-card { flex: 1; padding: 10px; border-radius: 6px; text-align: center; font-size: 0.85em; background: #fff; border: 1px solid #eee; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; border-radius: 8px; overflow: hidden; }
-        th, td { padding: 14px; text-align: left; border-bottom: 1px solid #eee; }
-        th { background: #f4f6f9; color: #666; font-size: 0.85em; text-transform: uppercase; }
-        .status-badge { padding: 5px 10px; border-radius: 20px; font-size: 0.75em; font-weight: bold; }
+        .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); margin-bottom: 2rem; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+        .input-group { margin-bottom: 1rem; }
+        label { display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: #64748b; }
+        input { width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; }
+        .total-box { background: #f1f5f9; padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--s); }
+        .btn-calc { background: var(--s); color: white; border: none; padding: 1rem; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 1rem; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 1rem; background: #f8fafc; border-bottom: 2px solid #e2e8f0; }
+        td { padding: 1rem; border-bottom: 1px solid #f1f5f9; }
     </style>
 </head>
 <body>
 
 <nav>
-    <button onclick="openTab('dashboard')">📊 Dashboard</button>
-    <button onclick="openTab('calc')">🧮 Precificação</button>
-    <button onclick="openTab('pedidos')">📦 Pedidos</button>
-    <button onclick="openTab('config')">⚙️ Configurações</button>
+    <button onclick="tab('p')">🧮 Precificação Avançada</button>
+    <button onclick="tab('o')">📋 Pedidos</button>
+    <button onclick="tab('c')">⚙️ Configurações Base</button>
 </nav>
 
-<div id="config" class="tab">
+<div id="p" class="tab active">
     <div class="card">
-        <h2>Custos Operacionais Mensais</h2>
+        <h2>Engenharia de Preço</h2>
         <div class="grid">
-            <div class="input-group">
-                <label>Aluguel / Espaço (R$)</label>
-                <input type="number" id="cfgAluguel" value="210">
+            <section>
+                <h3>1. Dados da Peça</h3>
+                <div class="input-group">
+                    <label>Nome do Projeto</label>
+                    <input type="text" id="name" placeholder="Ex: Vaso Geométrico">
+                </div>
+                <div class="input-group">
+                    <label>Peso Final (Gramas)</label>
+                    <input type="number" id="weight" value="0">
+                </div>
+                <div class="input-group">
+                    <label>Tempo de Impressão (Horas)</label>
+                    <input type="number" id="hours" value="0">
+                </div>
+            </section>
+
+            <section>
+                <h3>2. Custos Variáveis</h3>
+                <div class="input-group">
+                    <label>Custo do Filamento (R$/kg)</label>
+                    <input type="number" id="filCost" value="120">
+                </div>
+                <div class="input-group">
+                    <label>Taxa de Falha Estimada (%)</label>
+                    <input type="number" id="failRate" value="10">
+                </div>
+                <div class="input-group">
+                    <label>Mão de Obra (R$ - Setup/Acabamento)</label>
+                    <input type="number" id="labor" value="15">
+                </div>
+            </section>
+        </div>
+
+        <div class="total-box">
+            <div class="grid">
+                <div>
+                    <span style="font-size: 0.9rem;">Custo de Produção:</span>
+                    <div id="resCusto" style="font-size: 1.2rem; font-weight: bold;">R$ 0,00</div>
+                </div>
+                <div>
+                    <span style="font-size: 0.9rem;">Preço Sugerido (Venda):</span>
+                    <div id="resVenda" style="font-size: 2rem; color: var(--s); font-weight: 800;">R$ 0,00</div>
+                </div>
             </div>
-            <div class="input-group">
-                <label>Assinaturas/Software (R$)</label>
-                <input type="number" id="cfgSoftwares" value="95">
-            </div>
-            <div class="input-group">
-                <label>Taxa MEI (R$)</label>
-                <input type="number" id="cfgMei" value="60">
-            </div>
-            <div class="input-group">
-                <label>Custo KWh Energia (R$)</label>
-                <input type="number" id="cfgKwh" value="1.14" step="0.01">
-            </div>
+        </div>
+        <button class="btn-calc" onclick="calcular()">Calcular e Salvar na Tabela</button>
+    </div>
+
+    <div class="card">
+        <h3>Catálogo de Produtos Precificados</h3>
+        <table id="prodTable">
+            <thead><tr><th>Nome</th><th>Custo</th><th>Venda</th><th>Lucro Real</th></tr></thead>
+            <tbody id="prodBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<div id="c" class="tab">
+    <div class="card">
+        <h2>Custos Fixos da Arteks Brasil</h2>
+        <label>Energia Elétrica (R$ por KWh)</label>
+        <input type="number" id="kwh" value="0.85">
+        <label>Consumo Médio Impressora (Watts)</label>
+        <input type="number" id="watts" value="150">
+        <label>Margem de Lucro Desejada (%)</label>
+        <input type="number" id="profit" value="150">
+    </div>
+</div>
+
+<script>
+    let db = JSON.parse(localStorage.getItem('arteks_db')) || [];
+
+    function tab(id) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        render();
+    }
+
+    function calcular() {
+        const weight = parseFloat(document.getElementById('weight').value);
+        const hours = parseFloat(document.getElementById('hours').value);
+        const filCost = parseFloat(document.getElementById('filCost').value);
+        const failRate = parseFloat(document.getElementById('failRate').value) / 100;
+        const labor = parseFloat(document.getElementById('labor').value);
+        const kwhPrice = parseFloat(document.getElementById('kwh').value);
+        const watts = parseFloat(document.getElementById('watts').value);
+        const margin = parseFloat(document.getElementById('profit').value) / 100;
+
+        // Cálculo de Material com Falha
+        const matCusto = (weight / 1000) * filCost * (1 + failRate);
+        
+        // Cálculo de Energia (W / 1000 * horas * preço)
+        const energyCusto = (watts / 1000) * hours * kwhPrice;
+
+        const custoTotal = matCusto + energyCusto + labor;
+        const precoVenda = custoTotal * (1 + margin);
+
+        document.getElementById('resCusto').innerText = `R$ ${custoTotal.toFixed(2)}`;
+        document.getElementById('resVenda').innerText = `R$ ${precoVenda.toFixed(2)}`;
+
+        const prod = {
+            id: Date.now(),
+            nome: document.getElementById('name').value || "Sem nome",
+            custo: custoTotal.toFixed(2),
+            venda: precoVenda.toFixed(2),
+            lucro: (precoVenda - custoTotal).toFixed(2)
+        };
+
+        db.push(prod);
+        localStorage.setItem('arteks_db', JSON.stringify(db));
+        render();
+    }
+
+    function render() {
+        const body = document.getElementById('prodBody');
+        body.innerHTML = db.map(p => `
+            <tr>
+                <td>${p.nome}</td>
+                <td>R$ ${p.custo}</td>
+                <td><strong>R$ ${p.venda}</strong></td>
+                <td style="color: var(--s)">R$ ${p.lucro}</td>
+            </tr>
+        `).reverse().join('');
+    }
+
+    render();
+</script>
+</body>
+</html>
